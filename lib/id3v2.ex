@@ -4,7 +4,7 @@ defmodule ID3v2 do
   @moduledoc """
   # ID3v2
 
-  Basic ID3v2 tag parsing for Elixir. This is a work in progress. 
+  Basic ID3v2 tag parsing for Elixir. This is a work in progress.
 
   Be prepared to *Use the Source, Luke*. Expect bugs.
   """
@@ -109,7 +109,7 @@ defmodule ID3v2 do
   Read all ID3 frames from the file.
 
   Returns a Map of 4-character frame ID to frame content. For example:
-      
+
       %{
         "TIT2" => "Anesthetize"
         "TPE1" => "Porcupine Tree"
@@ -130,6 +130,12 @@ defmodule ID3v2 do
   defp _read_frames(_, <<0, _ :: binary>>) do
     %{}
   end
+
+  # Extra base case for files lacking pattern that matches the above
+  defp _read_frames(_, <<>>) do
+    %{}
+  end
+
   defp _read_frames(header, framedata) do
 
     << frameheader :: binary-size(10), rest :: binary >> = framedata
