@@ -1,5 +1,3 @@
-require IEx
-
 defmodule ID3v2 do
   require Logger
 
@@ -176,15 +174,9 @@ defmodule ID3v2 do
     {key, value} =
       case read_payload(key, payload) do
         {description, value} ->
-          if is_tuple(value) do
-            IEx.pry
-          end
           {key <> ":" <> description, strip_zero_bytes(value)}
 
         value ->
-          if is_tuple(value) do
-            IEx.pry
-          end
           {key, strip_zero_bytes(value)}
       end
 
