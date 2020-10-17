@@ -1,4 +1,4 @@
-# ID3v2 [![Build Status][drone-badge]
+# ID3v2 [![Build Status](https://drone.foggy.llc/api/badges/foggy.llc/elixir-id3v2/status.svg?ref=refs/heads/main)](https://drone.foggy.llc/foggy.llc/elixir-id3v2)
 
 Basic ID3v2 tag parsing for Elixir. This is a work in progress.
 
@@ -29,5 +29,3 @@ The package can be installed as:
       [{:id3v2, git: "https://gitea.foggy.llc:443/foggy.llc/elixir-id3v2.git", tag: "v0.1.4"}]
     end
     ```
-
-[drone-badge]: http://drone.foggy.llc/api/badges/foggy.llc/elixir-id3v2/status.svg?ref=refs/heads/main)](http://drone.foggy.llc/foggy.llc/elixir-id3v2
