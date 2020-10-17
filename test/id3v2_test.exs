@@ -61,11 +61,11 @@ defmodule ID3v2Test do
 
   test "extract null-terminated utf16" do
     {description, rest, bom} =
-      ID3v2.extract_null_terminated(<<1, 255, 254, "Wat"::utf16, 00, 00, 65, 66, 67>>)
+      ID3v2.extract_null_terminated(<<1, 254, 255, "Wat"::utf16, 00, 00, 65, 66, 67>>)
 
     assert description == "Wat"
     assert rest == "ABC"
-    assert bom == <<255, 254>>
+    assert bom == <<254, 255>>
   end
 
   test "read user url" do
