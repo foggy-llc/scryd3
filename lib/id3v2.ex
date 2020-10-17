@@ -227,7 +227,7 @@ defmodule ID3v2 do
         text
 
       _ ->
-        {description, read_utf16(text)}
+        {description, read_utf16(bom, text)}
     end
   end
 
@@ -275,6 +275,10 @@ defmodule ID3v2 do
   end
 
   def read_utf16(<<bom::binary-size(2), content::binary>>) do
+    read_utf16(bom, content)
+  end
+
+  def read_utf16(bom, <<bom::binary-size(2), content::binary>>) do
     read_utf16(bom, content)
   end
 

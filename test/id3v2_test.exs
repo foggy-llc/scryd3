@@ -74,10 +74,11 @@ defmodule ID3v2Test do
   end
 
   test "read user text" do
-    text =
+    {desc, value} =
       ID3v2.read_user_text(<<1, 255, 254, "Desc"::utf16-little, 00, 00, "Value"::utf16-little>>)
 
-    assert text == "Value"
+    assert desc == "Desc"
+    assert value == "Value"
   end
 
   test "read user text utf8" do
