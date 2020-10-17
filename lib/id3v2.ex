@@ -171,7 +171,15 @@ defmodule ID3v2 do
         payload
       end
 
-    value = read_payload(key, payload) |> strip_zero_bytes
+    {key, value} =
+      case read_payload(key, payload) do
+        {description, value} ->
+          {key <> ":" <> description, strip_zero_bytes(value)}
+
+        value ->
+          {key, strip_zero_bytes(value)}
+      end
+
     # Logger.debug "#{key}: #{value}"
 
     tempmap = Map.put(%{}, key, :binary.copy(value))
@@ -184,8 +192,7 @@ defmodule ID3v2 do
     # Special case nonsense goes here
     case key do
       "WXXX" -> read_user_url(payload)
-      # TODO read_user_text payload
-      "TXXX" -> ""
+      "TXXX" -> read_user_text(payload)
       # TODO Handle embedded JPEG data?
       "APIC" -> ""
       _ -> read_standard_payload(payload)
@@ -211,17 +218,20 @@ defmodule ID3v2 do
   end
 
   def read_user_text(payload) do
-    {_description, text, bom} = extract_null_terminated(payload)
+    {description, text, bom} = extract_null_terminated(payload)
 
     case bom do
-      nil -> text
-      _ -> read_utf16(bom, text)
+      nil ->
+        text
+
+      _ ->
+        {description, read_utf16(bom, text)}
     end
   end
 
   def extract_null_terminated(<<1, rest::binary>>) do
     <<bom::binary-size(2), content::binary>> = rest
-    {description, value} = scan_for_null_utf16(content, [])
+    {description, value} = scan_for_null_utf16(content, bom, [])
     {description, value, bom}
   end
 
@@ -237,10 +247,17 @@ defmodule ID3v2 do
   end
 
   # Based on https://elixirforum.com/t/scanning-a-bitstring-for-a-value/1852/2
-  defp scan_for_null_utf16(<<c::utf16, rest::binary>>, accum) do
+  def scan_for_null_utf16(<<c::utf16-little, rest::binary>>, <<255, 254>> = bom, accum) do
     case c do
       0 -> {to_string(Enum.reverse(accum)), rest}
-      _ -> scan_for_null_utf16(rest, [c | accum])
+      _ -> scan_for_null_utf16(rest, bom, [c | accum])
+    end
+  end
+
+  def scan_for_null_utf16(<<c::utf16, rest::binary>>, <<254, 255>> = bom, accum) do
+    case c do
+      0 -> {to_string(Enum.reverse(accum)), rest}
+      _ -> scan_for_null_utf16(rest, bom, [c | accum])
     end
   end
 
@@ -256,6 +273,21 @@ defmodule ID3v2 do
   end
 
   def read_utf16(<<bom::binary-size(2), content::binary>>) do
+    read_utf16(bom, content)
+  end
+
+  # This formatting isn't valid (spec says read encoding from front of desc
+  # and has no further encoding between desc and val) but it makes sense
+  # that it might be included.
+  # TODO: Further enumerate the fact that bom may be in binary but may NOT
+  # match the bom passed down from desc (e.g. desc may be little but value
+  # may be big). We need to just grab this and check if 255, 254, etc.
+  def read_utf16(bom, <<bom::binary-size(2), content::binary>>) do
+    read_utf16(bom, content)
+  end
+
+  # This formatting isn't valid AFAIK, however it appears on the Sonic test case
+  def read_utf16(bom, <<255, 0, 254, content::binary>>) do
     read_utf16(bom, content)
   end
 
