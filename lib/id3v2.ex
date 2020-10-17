@@ -1,4 +1,5 @@
 require IEx
+
 defmodule ID3v2 do
   require Logger
 
@@ -139,7 +140,6 @@ defmodule ID3v2 do
     <<frameheader::binary-size(10), rest::binary>> = framedata
     <<key::binary-size(4), size::binary-size(4), flags::binary-size(2)>> = frameheader
 
-
     flags = FrameHeaderFlags.read(flags)
 
     pldSize =
@@ -181,9 +181,8 @@ defmodule ID3v2 do
         value ->
           {key, strip_zero_bytes(value)}
       end
+
     # Logger.debug "#{key}: #{value}"
-
-
 
     tempmap = Map.put(%{}, key, :binary.copy(value))
     Map.merge(tempmap, _read_frames(header, rest))
@@ -195,9 +194,7 @@ defmodule ID3v2 do
     # Special case nonsense goes here
     case key do
       "WXXX" -> read_user_url(payload)
-
       "TXXX" -> read_user_text(payload)
-
       # TODO Handle embedded JPEG data?
       "APIC" -> ""
       _ -> read_standard_payload(payload)
@@ -225,9 +222,10 @@ defmodule ID3v2 do
   def read_user_text(payload) do
     {description, text, bom} = extract_null_terminated(payload)
 
-
     case bom do
-      nil -> text
+      nil ->
+        text
+
       _ ->
         {description, read_utf16(text)}
     end
