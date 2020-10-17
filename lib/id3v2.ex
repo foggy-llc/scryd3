@@ -176,9 +176,15 @@ defmodule ID3v2 do
     {key, value} =
       case read_payload(key, payload) do
         {description, value} ->
+          if is_tuple(value) do
+            IEx.pry
+          end
           {key <> ":" <> description, strip_zero_bytes(value)}
 
         value ->
+          if is_tuple(value) do
+            IEx.pry
+          end
           {key, strip_zero_bytes(value)}
       end
 
@@ -278,7 +284,18 @@ defmodule ID3v2 do
     read_utf16(bom, content)
   end
 
+  # This formatting isn't valid (spec says read encoding from front of desc
+  # and has no further encoding between desc and val) but it makes sense
+  # that it might be included.
+  # TODO: Further enumerate the fact that bom may be in binary but may NOT
+  # match the bom passed down from desc (e.g. desc may be little but value
+  # may be big). We need to just grab this and check if 255, 254, etc.
   def read_utf16(bom, <<bom::binary-size(2), content::binary>>) do
+    read_utf16(bom, content)
+  end
+
+  # This formatting isn't valid AFAIK, however it appears on the Sonic test case
+  def read_utf16(bom, <<255, 0, 254, content::binary>>) do
     read_utf16(bom, content)
   end
 
