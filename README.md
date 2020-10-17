@@ -1,6 +1,6 @@
-# ID3v2 [![Build Status][travis-badge]][travis-url] [![hex.pm version][hex-badge]][hex-url] [![Coverage Status][coveralls-badge]][coveralls-url]
+# ID3v2 [![Build Status][drone-badge]
 
-Basic ID3v2 tag parsing for Elixir. This is a work in progress. 
+Basic ID3v2 tag parsing for Elixir. This is a work in progress.
 
 Be prepared to *Use the Source, Luke*. Expect bugs.
 
@@ -26,14 +26,8 @@ The package can be installed as:
 
     ```elixir
     def deps do
-      [{:id3v2, "~> 0.1.2"}]
+      [{:id3v2, git: "https://gitea.foggy.llc:443/foggy.llc/elixir-id3v2.git", tag: "v0.1.4"}]
     end
     ```
 
-[coveralls-url]: https://coveralls.io/github/Cheezmeister/elixir-id3v2?branch=master
-[coveralls-badge]: https://coveralls.io/repos/github/Cheezmeister/elixir-id3v2/badge.svg?branch=master
-[hex-url]: https://hex.pm/packages/id3v2
-[hex-badge]: https://img.shields.io/hexpm/v/id3v2.svg?style=flat
-[travis-url]: https://travis-ci.org/Cheezmeister/elixir-id3v2
-[travis-badge]: https://travis-ci.org/Cheezmeister/elixir-id3v2.svg?branch=master
-
+[drone-badge]: http://drone.foggy.llc/api/badges/foggy.llc/elixir-id3v2/status.svg?ref=refs/heads/main)](http://drone.foggy.llc/foggy.llc/elixir-id3v2
