@@ -4,7 +4,7 @@ defmodule ID3v2.Mixfile do
   def project do
     [
       app: :id3v2,
-      version: "0.1.5",
+      version: "0.1.6",
       elixir: elixir(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
