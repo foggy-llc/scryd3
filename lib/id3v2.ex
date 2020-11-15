@@ -283,7 +283,7 @@ defmodule ID3v2 do
 
   def read_utf16(_desc_bom, <<254, 255, content::binary>>) do
     read_utf16(<<254, 255>>, content)
-  end  
+  end
 
   # This formatting isn't valid AFAIK, however it appears on the Sonic test case
   def read_utf16(bom, <<255, 0, 254, content::binary>>) do
@@ -292,7 +292,7 @@ defmodule ID3v2 do
 
   def read_utf16(bom, <<254, 0, 255, content::binary>>) do
     read_utf16(bom, content)
-  end  
+  end
 
   def read_utf16(bom, content) do
     {encoding, _charsize} = :unicode.bom_to_encoding(bom)
