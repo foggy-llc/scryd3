@@ -8,7 +8,6 @@ defmodule ID3v2 do
 
   Be prepared to *Use the Source, Luke*. Expect bugs.
   """
-  require Bitwise
   use Bitwise
 
   defmodule HeaderFlags do
@@ -50,12 +49,9 @@ defmodule ID3v2 do
 
     def read(<<doublebyte::integer-16>>) do
       %FrameHeaderFlags{
-        tag_alter_preservation: 0 != (doublebyte &&& @tag_alter_preservation_bit),
-        file_alter_preservation: 0 != (doublebyte &&& @file_alter_preservation_bit),
         read_only: 0 != (doublebyte &&& @read_only_bit),
         tag_alter_preservation: 0 != (doublebyte &&& @tag_alter_preservation_bit),
         file_alter_preservation: 0 != (doublebyte &&& @file_alter_preservation_bit),
-        read_only: 0 != (doublebyte &&& @read_only_bit),
         grouping_identity: 0 != (doublebyte &&& @grouping_identity_bit),
         compression: 0 != (doublebyte &&& @compression_bit),
         encryption: 0 != (doublebyte &&& @encryption_bit),
