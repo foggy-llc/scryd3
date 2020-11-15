@@ -4,7 +4,7 @@ defmodule ID3v2.Mixfile do
   def project do
     [
       app: :id3v2,
-      version: "0.1.5",
+      version: "0.1.6",
       elixir: elixir(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
@@ -42,13 +42,14 @@ defmodule ID3v2.Mixfile do
   defp deps(_) do
     [
       {:ex_doc, ">= 0.0.0", only: :docs},
-      {:excoveralls, "~> 0.5", only: :ci}
+      {:excoveralls, "~> 0.5", only: :ci},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
 
   defp aliases() do
     [
-      lint: ["format --check-formatted"]
+      lint: ["format --check-formatted", "credo --strict"]
     ]
   end
 

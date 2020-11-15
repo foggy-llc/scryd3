@@ -9,7 +9,7 @@ defmodule ID3v2Test do
     header = ID3v2.header(file)
     assert header.version == {4, 0}
     assert header.flags.unsynchronized
-    assert header.size == 72888
+    assert header.size == 72_888
   end
 
   test "header unsynchronized flag" do

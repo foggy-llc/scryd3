@@ -1,65 +1,10 @@
 defmodule ID3v2 do
-  require Logger
-
   @moduledoc """
-  # ID3v2
-
-  Basic ID3v2 tag parsing for Elixir. This is a work in progress.
-
-  Be prepared to *Use the Source, Luke*. Expect bugs.
+  Basic ID3v2 tag parsing for Elixir.
   """
+  require Logger
   use Bitwise
-
-  defmodule HeaderFlags do
-    defstruct [:unsynchronized, :extended_header, :experimental]
-
-    @unsynchronized_bit 128
-    @extended_header_bit 64
-    @experimental_bit 32
-
-    def read(byte) do
-      %HeaderFlags{
-        experimental: 0 != Bitwise.band(byte, @experimental_bit),
-        unsynchronized: 0 != Bitwise.band(byte, @unsynchronized_bit),
-        extended_header: 0 != Bitwise.band(byte, @extended_header_bit)
-      }
-    end
-  end
-
-  defmodule FrameHeaderFlags do
-    defstruct [
-      :tag_alter_preservation,
-      :file_alter_preservation,
-      :read_only,
-      :grouping_identity,
-      :compression,
-      :encryption,
-      :unsynchronisation,
-      :data_length_indicator
-    ]
-
-    @tag_alter_preservation_bit 1 <<< 15
-    @file_alter_preservation_bit 1 <<< 14
-    @read_only_bit 1 <<< 13
-    @grouping_identity_bit 16
-    @compression_bit 8
-    @encryption_bit 4
-    @unsynchronisation_bit 2
-    @data_length_indicator_bit 1
-
-    def read(<<doublebyte::integer-16>>) do
-      %FrameHeaderFlags{
-        read_only: 0 != (doublebyte &&& @read_only_bit),
-        tag_alter_preservation: 0 != (doublebyte &&& @tag_alter_preservation_bit),
-        file_alter_preservation: 0 != (doublebyte &&& @file_alter_preservation_bit),
-        grouping_identity: 0 != (doublebyte &&& @grouping_identity_bit),
-        compression: 0 != (doublebyte &&& @compression_bit),
-        encryption: 0 != (doublebyte &&& @encryption_bit),
-        unsynchronisation: 0 != (doublebyte &&& @unsynchronisation_bit),
-        data_length_indicator: 0 != (doublebyte &&& @data_length_indicator_bit)
-      }
-    end
-  end
+  alias ID3v2.{FrameHeaderFlags, HeaderFlags}
 
   @doc """
   Read the main ID3 header from the file. Extended header is not read nor allowed.
@@ -74,7 +19,7 @@ defmodule ID3v2 do
     <<"ID3", version::binary-size(2), flags::integer-8, size::binary-size(4), _::binary>> =
       filecontents
 
-    <<versionMajor, versionMinor>> = version
+    <<version_major, version_minor>> = version
     flags = read_flags(flags)
 
     if flags.extended_header do
@@ -82,7 +27,7 @@ defmodule ID3v2 do
     end
 
     header = %{
-      version: {versionMajor, versionMinor},
+      version: {version_major, version_minor},
       flags: flags,
       size: unpacked_size(size)
     }
@@ -114,8 +59,8 @@ defmodule ID3v2 do
   @spec frames(binary) :: map
   def frames(filecontent) do
     h = header(filecontent)
-    headerSize = h.size
-    <<_header::binary-size(10), framedata::binary-size(headerSize), _::binary>> = filecontent
+    header_size = h.size
+    <<_header::binary-size(10), framedata::binary-size(header_size), _::binary>> = filecontent
 
     _read_frames(h, :binary.copy(framedata))
   end
@@ -136,7 +81,7 @@ defmodule ID3v2 do
 
     flags = FrameHeaderFlags.read(flags)
 
-    pldSize =
+    pld_size =
       case header.version do
         {3, _} ->
           <<s::integer-32>> = size
@@ -149,7 +94,7 @@ defmodule ID3v2 do
           raise "ID3v2.#{v} not supported"
       end
 
-    <<payload::binary-size(pldSize), rest::binary>> = rest
+    <<payload::binary-size(pld_size), rest::binary>> = rest
 
     # TODO handle more flags
     payload =
