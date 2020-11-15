@@ -11,7 +11,8 @@ defmodule ID3v2.Mixfile do
       deps: deps(Mix.env()),
       test_coverage: [tool: ExCoveralls],
       description: "ID3v2 tag header reading",
-      package: package()
+      package: package(),
+      aliases: aliases()
     ]
   end
 
@@ -42,6 +43,12 @@ defmodule ID3v2.Mixfile do
     [
       {:ex_doc, ">= 0.0.0", only: :docs},
       {:excoveralls, "~> 0.5", only: :ci}
+    ]
+  end
+
+  defp aliases() do
+    [
+      lint: ["format --check-formatted"]
     ]
   end
 
