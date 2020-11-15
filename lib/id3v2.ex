@@ -4,7 +4,7 @@ defmodule ID3v2 do
   """
   require Logger
   use Bitwise
-  alias ID3v2.{HeaderFlags, FrameHeaderFlags}
+  alias ID3v2.{FrameHeaderFlags, HeaderFlags}
 
   @doc """
   Read the main ID3 header from the file. Extended header is not read nor allowed.

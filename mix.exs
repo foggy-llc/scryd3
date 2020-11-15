@@ -49,7 +49,7 @@ defmodule ID3v2.Mixfile do
 
   defp aliases() do
     [
-      lint: ["format --check-formatted", "credo"]
+      lint: ["format --check-formatted", "credo --strict"]
     ]
   end
 
