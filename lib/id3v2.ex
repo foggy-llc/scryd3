@@ -8,7 +8,6 @@ defmodule ID3v2 do
 
   Be prepared to *Use the Source, Luke*. Expect bugs.
   """
-  require Bitwise
   use Bitwise
 
   defmodule HeaderFlags do
@@ -50,12 +49,9 @@ defmodule ID3v2 do
 
     def read(<<doublebyte::integer-16>>) do
       %FrameHeaderFlags{
-        tag_alter_preservation: 0 != (doublebyte &&& @tag_alter_preservation_bit),
-        file_alter_preservation: 0 != (doublebyte &&& @file_alter_preservation_bit),
         read_only: 0 != (doublebyte &&& @read_only_bit),
         tag_alter_preservation: 0 != (doublebyte &&& @tag_alter_preservation_bit),
         file_alter_preservation: 0 != (doublebyte &&& @file_alter_preservation_bit),
-        read_only: 0 != (doublebyte &&& @read_only_bit),
         grouping_identity: 0 != (doublebyte &&& @grouping_identity_bit),
         compression: 0 != (doublebyte &&& @compression_bit),
         encryption: 0 != (doublebyte &&& @encryption_bit),
@@ -276,18 +272,25 @@ defmodule ID3v2 do
     read_utf16(bom, content)
   end
 
-  # This formatting isn't valid (spec says read encoding from front of desc
+  # This formatting isn't valid (id3v2 spec says read encoding from front of desc
   # and has no further encoding between desc and val) but it makes sense
   # that it might be included.
-  # TODO: Further enumerate the fact that bom may be in binary but may NOT
-  # match the bom passed down from desc (e.g. desc may be little but value
-  # may be big). We need to just grab this and check if 255, 254, etc.
-  def read_utf16(bom, <<bom::binary-size(2), content::binary>>) do
-    read_utf16(bom, content)
+  # To make up for the fact that this is invalid, we're extra stringent
+  # that the binary values must match the big or little patterns.
+  def read_utf16(_desc_bom, <<255, 254, content::binary>>) do
+    read_utf16(<<255, 254>>, content)
+  end
+
+  def read_utf16(_desc_bom, <<254, 255, content::binary>>) do
+    read_utf16(<<254, 255>>, content)
   end
 
   # This formatting isn't valid AFAIK, however it appears on the Sonic test case
   def read_utf16(bom, <<255, 0, 254, content::binary>>) do
+    read_utf16(bom, content)
+  end
+
+  def read_utf16(bom, <<254, 0, 255, content::binary>>) do
     read_utf16(bom, content)
   end
 

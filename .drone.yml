@@ -12,7 +12,7 @@ steps:
   - mix local.hex --force
   - mix deps.get
   - mix compile
-  - mix format --check-formatted
+  - mix lint
   - mix test
   when:
     event:
