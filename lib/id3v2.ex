@@ -135,6 +135,7 @@ defmodule ID3v2 do
       "WXXX" -> read_user_url(payload)
       "TXXX" -> read_user_text(payload)
       # TODO Handle embedded JPEG data?
+      "IPLS" -> read_involved_people_list(payload, [])
       "APIC" -> ""
       _ -> read_standard_payload(payload)
     end
@@ -169,6 +170,23 @@ defmodule ID3v2 do
         {description, read_utf16(bom, text)}
     end
   end
+
+  def read_involved_people_list(<<1>>, acc) do
+    acc
+  end
+
+  def read_involved_people_list(payload, acc) do
+    {role, text, _bom} = extract_null_terminated(payload)
+    {person, text, bom} = extract_null_terminated(<<1>> <> text)
+    case bom do
+      nil ->
+        text
+
+      _ ->
+        people = [{role, person} | acc]
+        read_involved_people_list(<<1>> <> text, people)
+    end
+  end  
 
   def extract_null_terminated(<<1, rest::binary>>) do
     <<bom::binary-size(2), content::binary>> = rest
