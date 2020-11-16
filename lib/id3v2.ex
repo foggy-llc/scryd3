@@ -178,6 +178,7 @@ defmodule ID3v2 do
   def read_involved_people_list(payload, acc) do
     {role, text, _bom} = extract_null_terminated(payload)
     {person, text, bom} = extract_null_terminated(<<1>> <> text)
+
     case bom do
       nil ->
         text
@@ -186,7 +187,7 @@ defmodule ID3v2 do
         people = [{role, person} | acc]
         read_involved_people_list(<<1>> <> text, people)
     end
-  end  
+  end
 
   def extract_null_terminated(<<1, rest::binary>>) do
     <<bom::binary-size(2), content::binary>> = rest
