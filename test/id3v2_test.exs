@@ -2,10 +2,11 @@ defmodule ID3v2Test do
   use ExUnit.Case
 
   # TODO run on several files to at least cover v2.{2,3,4}
-  @testfile "test/fixtures/Sonic_the_Hedgehog_3_LatinSphere_OC_ReMix.mp3"
-
+  @sonic "test/fixtures/Sonic_the_Hedgehog_3_LatinSphere_OC_ReMix.mp3"
+  @springsteen "test/fixtures/04-Western_Stars.mp3"
+  
   test "header extraction" do
-    file = File.read!(@testfile)
+    file = File.read!(@sonic)
     header = ID3v2.header(file)
     assert header.version == {4, 0}
     assert header.flags.unsynchronized
@@ -100,12 +101,13 @@ defmodule ID3v2Test do
     assert ID3v2.strip_zero_bytes(<<255, 255, 0>>) == <<255, 255>>
   end
 
-  Path.wildcard("test/fixtures/*.mp3")
-  |> Enum.map(fn file ->
-    @thisfile file
-    test "frame data - #{Path.basename(file)}" do
-      frames = ID3v2.frames(File.read!(@thisfile))
-      assert frames["TPUB"] == "OverClocked ReMix"
-    end
-  end)
+  test "frame data - #{@sonic}" do
+    frames = ID3v2.frames(File.read!(@sonic))
+    assert frames["TPUB"] == "OverClocked ReMix"
+  end
+
+  test "frame data - #{@springsteen}" do
+    frames = ID3v2.frames(File.read!(@springsteen))
+    assert frames["TPUB"] == "Columbia"
+  end  
 end
