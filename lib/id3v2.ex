@@ -112,19 +112,28 @@ defmodule ID3v2 do
         payload
       end
 
-    {key, value} =
-      case read_payload(key, payload) do
-        {description, value} ->
-          {key <> ":" <> description, strip_zero_bytes(value)}
+    key
+    |> read_payload(payload)
+    |> build_frame(key)
+    |> Map.merge(_read_frames(header, rest))
+  end
 
-        value ->
-          {key, strip_zero_bytes(value)}
-      end
+  def build_frame(_v, _k, _acc \\ %{})
 
-    # Logger.debug "#{key}: #{value}"
+  def build_frame(kv_pairs, key, _) when is_list(kv_pairs) do
+    Enum.reduce(kv_pairs, %{}, fn values, acc ->
+      build_frame(values, key, acc)
+    end)
+  end
 
-    tempmap = Map.put(%{}, key, :binary.copy(value))
-    Map.merge(tempmap, _read_frames(header, rest))
+  def build_frame({description, value}, key, acc) when is_map(acc) do
+    {key, value} = {key <> ":" <> description, strip_zero_bytes(value)}
+    Map.put(acc, key, :binary.copy(value))
+  end
+
+  def build_frame(value, key, _) do
+    {key, value} = {key, strip_zero_bytes(value)}
+    Map.put(%{}, key, :binary.copy(value))
   end
 
   def read_payload(key, payload) do
@@ -135,6 +144,7 @@ defmodule ID3v2 do
       "WXXX" -> read_user_url(payload)
       "TXXX" -> read_user_text(payload)
       # TODO Handle embedded JPEG data?
+      "IPLS" -> read_involved_people_list(payload, [])
       "APIC" -> ""
       _ -> read_standard_payload(payload)
     end
@@ -167,6 +177,24 @@ defmodule ID3v2 do
 
       _ ->
         {description, read_utf16(bom, text)}
+    end
+  end
+
+  def read_involved_people_list(<<1>>, acc) do
+    acc
+  end
+
+  def read_involved_people_list(payload, acc) do
+    {role, text, _bom} = extract_null_terminated(payload)
+    {person, text, bom} = extract_null_terminated(<<1>> <> text)
+
+    case bom do
+      nil ->
+        text
+
+      _ ->
+        people = [{role, person} | acc]
+        read_involved_people_list(<<1>> <> text, people)
     end
   end
 
