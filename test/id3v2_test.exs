@@ -87,6 +87,16 @@ defmodule ID3v2Test do
     assert text == "Value"
   end
 
+  test "read involved people list" do
+    [{role1, person1}, {role2, person2}] =
+      ID3v2.read_involved_people_list(<<1, 255, 254, "trumpet"::utf16-little, 00, 00, 255, 254, "Clifford Brown"::utf16-little, 00, 00, 255, 254, "piano"::utf16-little, 00, 00, 255, 254, "Horace Silver"::utf16-little, 00, 00>>, [])
+
+    assert role2 == "trumpet"
+    assert person2 == "Clifford Brown"
+    assert role1 == "piano"
+    assert person1 == "Horace Silver"
+  end  
+
   test "strip zero bytes" do
     assert ID3v2.strip_zero_bytes(<<0>>) == <<>>
     assert ID3v2.strip_zero_bytes(<<>>) == <<>>
