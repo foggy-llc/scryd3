@@ -42,7 +42,7 @@ defmodule ID3v2.Mixfile do
   defp deps(_) do
     [
       {:ex_doc, ">= 0.0.0", only: :docs},
-      {:excoveralls, "~> 0.5", only: :ci},
+      {:excoveralls, "~> 0.10", only: [:test]},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
