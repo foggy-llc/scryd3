@@ -4,7 +4,7 @@ defmodule ID3v2Test do
   # TODO run on several files to at least cover v2.{2,3,4}
   @sonic "test/fixtures/Sonic_the_Hedgehog_3_LatinSphere_OC_ReMix.mp3"
   @springsteen "test/fixtures/04-Western_Stars.mp3"
-  
+
   test "header extraction" do
     file = File.read!(@sonic)
     header = ID3v2.header(file)
@@ -89,13 +89,18 @@ defmodule ID3v2Test do
 
   test "read involved people list" do
     [{role1, person1}, {role2, person2}] =
-      ID3v2.read_involved_people_list(<<1, 255, 254, "trumpet"::utf16-little, 00, 00, 255, 254, "Clifford Brown"::utf16-little, 00, 00, 255, 254, "piano"::utf16-little, 00, 00, 255, 254, "Horace Silver"::utf16-little, 00, 00>>, [])
+      ID3v2.read_involved_people_list(
+        <<1, 255, 254, "trumpet"::utf16-little, 00, 00, 255, 254, "Clifford Brown"::utf16-little,
+          00, 00, 255, 254, "piano"::utf16-little, 00, 00, 255, 254,
+          "Horace Silver"::utf16-little, 00, 00>>,
+        []
+      )
 
     assert role2 == "trumpet"
     assert person2 == "Clifford Brown"
     assert role1 == "piano"
     assert person1 == "Horace Silver"
-  end  
+  end
 
   test "strip zero bytes" do
     assert ID3v2.strip_zero_bytes(<<0>>) == <<>>
@@ -119,5 +124,5 @@ defmodule ID3v2Test do
   test "frame data - #{@springsteen}" do
     frames = ID3v2.frames(File.read!(@springsteen))
     assert frames["TPUB"] == "Columbia"
-  end  
+  end
 end
