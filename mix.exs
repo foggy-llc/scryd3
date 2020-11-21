@@ -25,7 +25,7 @@ defmodule ScryD3.Mixfile do
       start_permanent: Mix.env() == :prod,
       deps: deps(Mix.env()),
       test_coverage: [tool: ExCoveralls],
-      description: "ScryD3 tag header reading",
+      description: "ID3 tag header reading",
       package: package(),
       aliases: aliases(),
       source_url: "https://gitea.foggy.llc/foggy.llc/scryd3"
