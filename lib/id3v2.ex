@@ -1,10 +1,10 @@
-defmodule ID3v2 do
+defmodule ScryD3 do
   @moduledoc """
-  Basic ID3v2 tag parsing for Elixir.
+  Basic ScryD3 tag parsing for Elixir.
   """
   require Logger
   use Bitwise
-  alias ID3v2.{FrameHeaderFlags, HeaderFlags}
+  alias ScryD3.{FrameHeaderFlags, HeaderFlags}
 
   @doc """
   Read the main ID3 header from the file. Extended header is not read nor allowed.
@@ -91,7 +91,7 @@ defmodule ID3v2 do
           unpacked_size(size)
 
         {v, _} ->
-          raise "ID3v2.#{v} not supported"
+          raise "ScryD3.#{v} not supported"
       end
 
     <<payload::binary-size(pld_size), rest::binary>> = rest

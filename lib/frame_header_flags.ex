@@ -1,4 +1,4 @@
-defmodule ID3v2.FrameHeaderFlags do
+defmodule ScryD3.FrameHeaderFlags do
   @moduledoc """
   Struct for the frame headers.
 
@@ -27,7 +27,7 @@ defmodule ID3v2.FrameHeaderFlags do
   @data_length_indicator_bit 1
 
   def read(<<doublebyte::integer-16>>) do
-    %ID3v2.FrameHeaderFlags{
+    %ScryD3.FrameHeaderFlags{
       read_only: 0 != (doublebyte &&& @read_only_bit),
       tag_alter_preservation: 0 != (doublebyte &&& @tag_alter_preservation_bit),
       file_alter_preservation: 0 != (doublebyte &&& @file_alter_preservation_bit),

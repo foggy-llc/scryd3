@@ -1,4 +1,4 @@
-defmodule ID3v2.Mixfile do
+defmodule ScryD3.Mixfile do
   use Mix.Project
 
   def project do
@@ -10,7 +10,7 @@ defmodule ID3v2.Mixfile do
       start_permanent: Mix.env() == :prod,
       deps: deps(Mix.env()),
       test_coverage: [tool: ExCoveralls],
-      description: "ID3v2 tag header reading",
+      description: "ScryD3 tag header reading",
       package: package(),
       aliases: aliases()
     ]
