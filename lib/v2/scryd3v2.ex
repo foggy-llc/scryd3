@@ -1,10 +1,10 @@
-defmodule ScryD3 do
+defmodule ScryD3.V2 do
   @moduledoc """
   Basic ScryD3 tag parsing for Elixir.
   """
   require Logger
   use Bitwise
-  alias ScryD3.{FrameHeaderFlags, HeaderFlags}
+  alias ScryD3.V2.{FrameHeaderFlags, HeaderFlags}
 
   @doc """
   Read the main ID3 header from the file. Extended header is not read nor allowed.
