@@ -3,24 +3,18 @@ defmodule ScryD3.Mixfile do
 
   def project do
     [
-      app: :id3v2,
-      version: "0.1.7",
-      elixir: elixir(Mix.env()),
+      app: :scryd3,
+      version: "0.2.0",
+      elixir: "~> 1.10",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(Mix.env()),
       test_coverage: [tool: ExCoveralls],
       description: "ScryD3 tag header reading",
       package: package(),
-      aliases: aliases()
+      aliases: aliases(),
+      source_url: "https://gitea.foggy.llc/foggy.llc/scryd3"
     ]
-  end
-
-  def elixir(env) do
-    case env do
-      :docs -> "~> 1.2"
-      _ -> "~> 1.2"
-    end
   end
 
   # Configuration for the OTP application
@@ -30,18 +24,9 @@ defmodule ScryD3.Mixfile do
     [applications: [:logger]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps(_) do
     [
-      {:ex_doc, ">= 0.0.0", only: :docs},
+      {:ex_doc, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: [:test]},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
@@ -55,12 +40,12 @@ defmodule ScryD3.Mixfile do
 
   defp package do
     [
-      name: "id3v2",
-      licenses: ["ZLIB"],
-      maintainers: ["Cheezmeister"],
+      name: "scryd3",
+      licenses: ["ZLIB", "AGPL-3.0-or-later"],
+      maintainers: ["foggy"],
       links: %{
-        GitHub: "https://github.com/Cheezmeister/elixir-id3v2",
-        Hex: "https://hex.pm/packages/id3v2"
+        Gitea: "https://gitea.foggy.llc/foggy.llc/scryd3",
+        Hex: "https://hex.pm/packages/scryd3"
       }
     ]
   end
