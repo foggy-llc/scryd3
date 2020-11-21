@@ -1,6 +1,6 @@
 defmodule ScryD3.V2 do
   @moduledoc """
-  Basic ScryD3 tag parsing for Elixir.
+  Basic ID3v2 tag parsing.
   """
   require Logger
   use Bitwise
