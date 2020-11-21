@@ -70,13 +70,17 @@ defmodule ScryD3.V2Test do
   end
 
   test "read user url" do
-    link = ScryD3.V2.read_user_url(<<1, 255, 254, "Desc"::utf16-little, 00, 00, "http://bogus.url">>)
+    link =
+      ScryD3.V2.read_user_url(<<1, 255, 254, "Desc"::utf16-little, 00, 00, "http://bogus.url">>)
+
     assert link == "http://bogus.url"
   end
 
   test "read user text" do
     {desc, value} =
-      ScryD3.V2.read_user_text(<<1, 255, 254, "Desc"::utf16-little, 00, 00, "Value"::utf16-little>>)
+      ScryD3.V2.read_user_text(
+        <<1, 255, 254, "Desc"::utf16-little, 00, 00, "Value"::utf16-little>>
+      )
 
     assert desc == "Desc"
     assert value == "Value"
