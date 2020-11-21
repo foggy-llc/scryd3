@@ -33,3 +33,7 @@ The package can be installed as:
 ScryD3 is forked from [id3v2](https://github.com/Cheezmeister/elixir-id3v2). ScryD3 is a continuation of the work from that package.
 
 The package source does not contain a license, but the [hex package](https://hex.pm/packages/id3v2) is explicitly licensed under ZLIB. See our inclusion of the [zlib license](ZLIB_LICENSE).
+
+## License
+
+ScryD3 is [licensed](LICENSE) AGPL-3.0. In addition to the terms of the included license, all modifications of this software must maintain the author's copyright claims included herein. Additionally, modifications must take steps to state clearly that they are modifications.
