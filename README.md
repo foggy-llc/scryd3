@@ -1,4 +1,4 @@
-# ScryD3 [![Build Status](https://drone.foggy.llc/api/badges/foggy.llc/elixir-id3v2/status.svg?ref=refs/heads/main)](https://drone.foggy.llc/foggy.llc/elixir-id3v2)
+# ScryD3 [![Build Status](https://drone.foggy.llc/api/badges/foggy.llc/scryd3/status.svg)](https://drone.foggy.llc/foggy.llc/scryd3)
 
 Basic ID3 tag parsing for Elixir. Currently only implements ID3v2.
 
