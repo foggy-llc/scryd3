@@ -145,21 +145,29 @@ defmodule ScryD3.V2 do
       "TXXX" -> read_user_text(payload)
       # TODO Handle embedded JPEG data?
       "IPLS" -> read_involved_people_list(payload, [])
+      "COMM" -> read_comments(payload)
       "APIC" -> ""
       _ -> read_standard_payload(payload)
     end
   end
 
-  defp read_standard_payload(payload) do
-    <<encoding::integer-8, rest::binary>> = payload
+  defp read_comments(<<encoding::integer-8, language::binary-size(3), payload::binary>>) do
+    {language, read_standard_payload(encoding, payload)}
+  end
+
+  defp read_standard_payload(encoding, payload) do
     # TODO Handle optional 3-byte language prefix
     case encoding do
-      0 -> rest
-      1 -> read_utf16(rest)
+      0 -> payload
+      1 -> read_utf16(payload)
       2 -> raise "I don't support utf16 without a bom"
-      3 -> rest
+      3 -> payload
       _ -> payload
     end
+  end
+
+  defp read_standard_payload(<<encoding::integer-8, payload::binary>>) do
+    read_standard_payload(encoding, payload)
   end
 
   def read_user_url(payload) do
@@ -239,6 +247,10 @@ defmodule ScryD3.V2 do
 
   def read_utf16("") do
     ""
+  end
+
+  def read_utf16(<<bom::binary-size(2), 0, 0, content::binary>>) do
+    read_utf16(bom, content)
   end
 
   def read_utf16(<<bom::binary-size(2), content::binary>>) do
