@@ -146,7 +146,7 @@ defmodule ScryD3.V2 do
       # TODO Handle embedded JPEG data?
       "IPLS" -> read_involved_people_list(payload, [])
       "COMM" -> read_comments(payload)
-      "APIC" -> ""
+      "APIC" -> ScryD3.V2.ApicFrame.read(payload)
       _ -> read_standard_payload(payload)
     end
   end
