@@ -4,7 +4,7 @@ defmodule ScryD3.V2 do
   """
   require Logger
   use Bitwise
-  alias ScryD3.V2.{FrameHeaderFlags, HeaderFlags}
+  alias ScryD3.V2.{ApicFrame, FrameHeaderFlags, HeaderFlags}
 
   @doc """
   Read the main ID3 header from the file. Extended header is not read nor allowed.
@@ -126,6 +126,11 @@ defmodule ScryD3.V2 do
     end)
   end
 
+  def build_frame({description, value}, key, acc) when is_map(value) do
+    {key, value} = {key <> ":" <> description, value}
+    Map.put(acc, key, value)
+  end
+
   def build_frame({description, value}, key, acc) when is_map(acc) do
     {key, value} = {key <> ":" <> description, strip_zero_bytes(value)}
     Map.put(acc, key, :binary.copy(value))
@@ -143,10 +148,9 @@ defmodule ScryD3.V2 do
     case key do
       "WXXX" -> read_user_url(payload)
       "TXXX" -> read_user_text(payload)
-      # TODO Handle embedded JPEG data?
       "IPLS" -> read_involved_people_list(payload, [])
       "COMM" -> read_comments(payload)
-      "APIC" -> ""
+      "APIC" -> ApicFrame.read(payload)
       _ -> read_standard_payload(payload)
     end
   end
