@@ -37,7 +37,7 @@ defmodule ScryD3.V2.ApicFrame do
   end
 
   def read(<<encoding::binary-size(1), payload::binary>>) do
-    {mime, rest, _} = ScryD3.V2.extract_null_terminated(encoding <> payload)
+    {mime, rest, _} = ScryD3.V2.extract_null_terminated(<<0>> <> payload)
     <<type_code, picture_data::binary>> = rest
     picture_type = @picture_types[type_code]
 
