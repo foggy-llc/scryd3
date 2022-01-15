@@ -151,8 +151,72 @@ defmodule ScryD3.V2 do
       "IPLS" -> read_involved_people_list(payload, [])
       "COMM" -> read_comments(payload)
       "APIC" -> ApicFrame.read(payload)
+      "CHAP" -> read_chapter_frame(payload)
       _ -> read_standard_payload(payload)
     end
+  end
+
+  defp decode_chapter_subframe_information(frame_size, payload) do
+    info_size = frame_size - 3
+
+    <<text_encoding::integer-8, _language::bytes-2, info::bytes-size(info_size), _::bytes>> =
+      payload
+
+    case text_encoding do
+      0 ->
+        :unicode.characters_to_binary(info, :latin1) |> String.replace_suffix(<<0>>, "")
+
+      1 ->
+        :unicode.characters_to_binary(info, {:utf16, :little}) |> String.replace_suffix(<<0>>, "")
+
+      _ ->
+        info
+    end
+  end
+
+  defp read_chapter_subframes(elements, payload) do
+    {elements, rest} =
+      try do
+        <<"TIT2", frame_size::integer-32, _frame_flags::bytes-2, rest::bytes>> = payload
+        chapter_title = decode_chapter_subframe_information(frame_size, rest)
+        {Map.put(elements, :title, chapter_title), rest}
+      rescue
+        MatchError -> {elements, payload}
+      end
+
+    try do
+      <<"TIT3", frame_size::integer-32, _frame_flags::bytes-2, rest::bytes>> = rest
+      chapter_description = decode_chapter_subframe_information(frame_size, rest)
+      Map.put(elements, :description, chapter_description)
+    rescue
+      MatchError -> elements
+    end
+  end
+
+  defp read_chapter_frame(<<id_c::bytes-1, rest::bytes>>, id_acc) do
+    case id_c do
+      <<0>> ->
+        <<start_time::integer-32, end_time::integer-32, start_offset::integer-32,
+          end_offset::integer-32, rest::bytes>> = rest
+
+        elements =
+          %{
+            start_time: start_time,
+            end_time: end_time,
+            start_offset: start_offset,
+            end_offset: end_offset
+          }
+          |> read_chapter_subframes(rest)
+
+        {id_acc, elements}
+
+      _ ->
+        read_chapter_frame(rest, id_acc <> id_c)
+    end
+  end
+
+  defp read_chapter_frame(payload) do
+    read_chapter_frame(payload, "")
   end
 
   defp read_comments(<<encoding::integer-8, language::binary-size(3), payload::binary>>) do
