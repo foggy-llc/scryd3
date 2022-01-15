@@ -4,6 +4,7 @@ defmodule ScryD3.V2Test do
   # TODO run on several files to at least cover v2.{2,3,4}
   @sonic "test/fixtures/Sonic_the_Hedgehog_3_LatinSphere_OC_ReMix.mp3"
   @springsteen "test/fixtures/04-Western_Stars.mp3"
+  @chapter_frames_fixture "test/fixtures/case_podcast_episode_20.mp3"
 
   test "header extraction" do
     file = File.read!(@sonic)
@@ -128,5 +129,147 @@ defmodule ScryD3.V2Test do
   test "frame data - #{@springsteen}" do
     frames = ScryD3.V2.frames(File.read!(@springsteen))
     assert frames["TPUB"] == "Columbia"
+  end
+
+  test "chapter frames - #{@chapter_frames_fixture}" do
+    expected_chapter_frames = %{
+      "CHAP:chp0" => %{
+        end_offset: 4_294_967_295,
+        end_time: 21000,
+        start_offset: 4_294_967_295,
+        start_time: 0,
+        title: "Introduction"
+      },
+      "CHAP:chp1" => %{
+        end_offset: 4_294_967_295,
+        end_time: 100_000,
+        start_offset: 4_294_967_295,
+        start_time: 21000,
+        title: "Why Clojure?"
+      },
+      "CHAP:chp10" => %{
+        end_offset: 4_294_967_295,
+        end_time: 1_824_000,
+        start_offset: 4_294_967_295,
+        start_time: 1_688_000,
+        title: "Safety Critical Systems & Spec ??"
+      },
+      "CHAP:chp11" => %{
+        end_offset: 4_294_967_295,
+        end_time: 2_068_000,
+        start_offset: 4_294_967_295,
+        start_time: 1_824_000,
+        title: "Datomic"
+      },
+      "CHAP:chp12" => %{
+        end_offset: 4_294_967_295,
+        end_time: 2_208_000,
+        start_offset: 4_294_967_295,
+        start_time: 2_068_000,
+        title: "Opinionated Web Frameworks"
+      },
+      "CHAP:chp13" => %{
+        end_offset: 4_294_967_295,
+        end_time: 2_567_000,
+        start_offset: 4_294_967_295,
+        start_time: 2_208_000,
+        title: "Problems left to solve…"
+      },
+      "CHAP:chp14" => %{
+        end_offset: 4_294_967_295,
+        end_time: 2_773_000,
+        start_offset: 4_294_967_295,
+        start_time: 2_567_000,
+        title: "System Level Communication"
+      },
+      "CHAP:chp15" => %{
+        end_offset: 4_294_967_295,
+        end_time: 2_988_000,
+        start_offset: 4_294_967_295,
+        start_time: 2_773_000,
+        title: "A functional approach to programming"
+      },
+      "CHAP:chp16" => %{
+        end_offset: 4_294_967_295,
+        end_time: 3_191_000,
+        start_offset: 4_294_967_295,
+        start_time: 2_988_000,
+        title: "How to efficiently develop programming"
+      },
+      "CHAP:chp17" => %{
+        end_offset: 4_294_967_295,
+        end_time: 3_417_000,
+        start_offset: 4_294_967_295,
+        start_time: 3_191_000,
+        title: "Finding the right problem"
+      },
+      "CHAP:chp18" => %{
+        end_offset: 4_294_967_295,
+        end_time: 3_599_996,
+        start_offset: 4_294_967_295,
+        start_time: 3_417_000,
+        title: "Technical things to research"
+      },
+      "CHAP:chp2" => %{
+        end_offset: 4_294_967_295,
+        end_time: 201_000,
+        start_offset: 4_294_967_295,
+        start_time: 100_000,
+        title: "What problems does Clojure solve?"
+      },
+      "CHAP:chp3" => %{
+        end_offset: 4_294_967_295,
+        end_time: 260_000,
+        start_offset: 4_294_967_295,
+        start_time: 201_000,
+        title: "Platforms that Clojure runs on"
+      },
+      "CHAP:chp4" => %{
+        end_offset: 4_294_967_295,
+        end_time: 354_000,
+        start_offset: 4_294_967_295,
+        start_time: 260_000,
+        title: "Clojure on the JVM"
+      },
+      "CHAP:chp5" => %{
+        end_offset: 4_294_967_295,
+        end_time: 461_000,
+        start_offset: 4_294_967_295,
+        start_time: 354_000,
+        title: "Clojure 1.9: Spec & Tools"
+      },
+      "CHAP:chp6" => %{
+        end_offset: 4_294_967_295,
+        end_time: 617_000,
+        start_offset: 4_294_967_295,
+        start_time: 461_000,
+        title: "Installer & Command Line Tools"
+      },
+      "CHAP:chp7" => %{
+        end_offset: 4_294_967_295,
+        end_time: 1_166_000,
+        start_offset: 4_294_967_295,
+        start_time: 617_000,
+        title: "Dependency Problem"
+      },
+      "CHAP:chp8" => %{
+        end_offset: 4_294_967_295,
+        end_time: 1_383_000,
+        start_offset: 4_294_967_295,
+        start_time: 1_166_000,
+        title: "Designing functions to allow change"
+      },
+      "CHAP:chp9" => %{
+        end_offset: 4_294_967_295,
+        end_time: 1_688_000,
+        start_offset: 4_294_967_295,
+        start_time: 1_383_000,
+        title: "Clojure Spec"
+      }
+    }
+
+    frames = ScryD3.V2.frames(File.read!(@chapter_frames_fixture))
+    chapter_frames = :maps.filter(fn key, _ -> String.starts_with?(key, "CHAP:") end, frames)
+    assert expected_chapter_frames == chapter_frames
   end
 end
